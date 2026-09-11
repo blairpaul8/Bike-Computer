@@ -1,7 +1,7 @@
 IMAGE_NAME := test-dev-env
 CONTAINER_NAME := devbox
 
-.PHONY: docker-build docker-run docker-start docker-stop docker-shell
+.PHONY: docker-build docker-run docker-start docker-stop docker-shell build
 
 docker-build:
 	docker build -t $(IMAGE_NAME) .
@@ -21,3 +21,5 @@ docker-stop:
 docker-shell:
 	docker exec -it $(CONTAINER_NAME) /bin/bash
 
+build:
+	echo Build with esp-idf **Replace with actual command**
