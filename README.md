@@ -41,6 +41,24 @@ make build
 make flash
 ```
 
+### Windows Setup
+
+To connect the esp32 to windows, you must attach the esp usb port to ubuntu to then
+be passed into the docker container.
+
+- Bind the usb port(Only needs to be done once)
+
+```bash
+make usb-prep-bind-w
+make usb-bind-w BUSID=<bus id of Silicon Labs CP210x USB to UART Bridge>
+```
+
+- Attach usb port to ubuntu(Needs to be done every time and Ubuntu terminal needs to be open)
+
+```bash
+make usb-attach-w BUSID=<bus id of Silicon Labs CP210x USB to UART Bridge>
+```
+
 ## Hardware and Software Details
 
 ### Hardware Components
