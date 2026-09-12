@@ -21,4 +21,4 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             devbox:ci \
-            make build
+            bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'

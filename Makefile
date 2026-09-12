@@ -11,9 +11,15 @@ docker-build:
 
 # Create the container
 # --device passes the usb connection into the container
-docker-run:
+docker-run-usb:
 	docker run -dit \
 		--device=/dev/ttyUSB0:/dev/ttyUSB0 \
+		-v $(shell pwd):/workspace \
+		--name $(CONTAINER_NAME) \
+		$(IMAGE_NAME)
+
+docker-run:
+	docker run -dit \
 		-v $(shell pwd):/workspace \
 		--name $(CONTAINER_NAME) \
 		$(IMAGE_NAME)
