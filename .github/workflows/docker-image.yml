@@ -19,6 +19,7 @@ jobs:
       - name: Build project inside devbox
         run: |
           docker run --rm \
+            --user root \
             -v ${{ github.workspace }}:/workspace \
             devbox:ci \
             bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'
