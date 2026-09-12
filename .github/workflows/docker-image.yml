@@ -14,12 +14,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the devbox image
-        run: docker build . --file Dockerfile --tag devbox:ci
+        run: docker build . --file Dockerfile --tag devbox:ci \
+              --build-arg USER_UID="$(id -u)" \
+              --build-arg USER_GID="$(id -g)"
 
       - name: Build project inside devbox
         run: |
           docker run --rm \
-            --user root \
             -v ${{ github.workspace }}:/workspace \
             devbox:ci \
             bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'
