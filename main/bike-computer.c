@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include "tasks.h"
 
 void app_main(void)
 {
-    printf("Well hello there!");
+    weather_task_start();
 }

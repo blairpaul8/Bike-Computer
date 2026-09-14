@@ -69,3 +69,7 @@ Testing/
 
 # configuration for the build
 sdkconfig
+
+managed_components
+dependencies.lock
+idf_component.yml

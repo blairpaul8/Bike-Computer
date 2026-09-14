@@ -19,12 +19,15 @@ to the Makefile for additional commands.
 make docker-build
 ```
 
-- Run docker container
+- Run docker container with or without usb connected
   - This will drop you into the container at a bash prompt
     you should be in /workspace
   - All file interactions will also take effect outside the container
     in the repo.
 
+``` bash
+make docker-run-usb
+```
 ``` bash
 make docker-run
 ```
