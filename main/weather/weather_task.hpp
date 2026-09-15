@@ -1,7 +1,7 @@
 #ifndef WEATHER_TASK_HPP_
 #define WEATHER_TASK_HPP_
 
-#include "task.hpp"
+#include "../tasks/task.hpp"
 #include "weather.hpp"
 #include <memory>
 
