@@ -8,10 +8,11 @@ class IWeather {
 public:
   virtual float get_temp() = 0;
   virtual float get_humidity() = 0;
+  virtual void update_sensor() = 0;
 
 private:
   // Doxygen Comment
-  virtual bool read_sensor(float &temp, float &humidtity) = 0;
+  virtual bool read_sensor() = 0;
 };
 
 } // end namespace weather

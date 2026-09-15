@@ -22,6 +22,10 @@ RUN apt-get update \
         cmake \
         ninja-build \
         ccache \
+        ripgrep \
+        fd-find \
+        nodejs \
+        npm \
         libffi-dev \
         libssl-dev \
         dfu-util \
