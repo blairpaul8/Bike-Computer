@@ -1,13 +1,18 @@
-#ifndef WEATHER_TASK_HPP
-#define WEATHER_TASK_HPP
+#ifndef WEATHER_TASK_HPP_
+#define WEATHER_TASK_HPP_
 
-class Weather_Task {
+#include "task.hpp"
+#include "weather.hpp"
+#include <memory>
+
+class Weather_Task : public Task<Weather_Task> {
 public:
-    void start();
+    bool init();
+    void run();
 
 private:
-    static void taskEntry(void* parameter);
-    void run();
+    // pointer to the weather object
+    std::unique_ptr<weather::IWeather> weather_obj_;
 };
 
-#endif
+#endif // WEATHER_TASK_HPP_

@@ -1,4 +1,6 @@
 #include "weather_task.hpp"
+#include "IWeather.hpp"
+#include "weather.hpp"
 #include "tasks.h"
 
 #include "driver/gpio.h"
@@ -7,71 +9,31 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "dht.h"
+#include <memory>
 
-#define DHT_GPIO GPIO_NUM_27
+static const char *TAG = "WeatherTask";
 
-static const char* TAG = "DHT11";
-
-void Weather_Task::start()
-{
-    BaseType_t result = xTaskCreate(
-        taskEntry,
-        "WeatherTask",
-        2048,
-        this,
-        5,
-        nullptr
-    );
-
-    if (result != pdPASS) {
-        ESP_LOGE(TAG, "Failed to create weather task");
-    }
+bool Weather_Task::init() {
+  weather_obj_ = std::make_unique<weather::Weather>();
+  return weather_obj_ != nullptr;
 }
 
-void Weather_Task::taskEntry(void* parameter)
-{
-    auto* weatherTask = static_cast<Weather_Task*>(parameter);
-    weatherTask->run();
+void Weather_Task::run() {
+  while (true) {
 
-    // A FreeRTOS task must not return.
-    vTaskDelete(nullptr);
+    // gather new sensor readings
+    weather_obj_->update_sensor();
+
+    // log readings
+    ESP_LOGI(TAG, "Temp: %.1f C, Humidity: %.1f%%",
+             weather_obj_->get_temp(), weather_obj_->get_humidity());
+
+    // delay 2 seconds
+    vTaskDelay(pdMS_TO_TICKS(2000));
+  }
 }
 
-void Weather_Task::run()
-{
-    float temperature = 0.0F;
-    float humidity = 0.0F;
-
-    while (true) {
-        esp_err_t result = dht_read_float_data(
-            DHT_TYPE_DHT11,
-            DHT_GPIO,
-            &humidity,
-            &temperature
-        );
-
-        if (result == ESP_OK) {
-            ESP_LOGI(
-                TAG,
-                "Temp: %.1f C, Humidity: %.1f%%",
-                temperature,
-                humidity
-            );
-        } else {
-            ESP_LOGE(
-                TAG,
-                "Failed to read DHT11: %s",
-                esp_err_to_name(result)
-            );
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(2000));
-    }
-}
-
-extern "C" void weather_task_start(void)
-{
-    static Weather_Task weatherTask;
-    weatherTask.start();
+extern "C" void weather_task_start(void) {
+  static Weather_Task weatherTask;
+  weatherTask.start("WeatherTask");
 }

@@ -1,6 +1,10 @@
 # --- Git branch function ---
 parse_git_branch() {
-    git branch 2>/dev/null | sed -n '/\* /s///p'
+    local branch
+    branch=$(git branch 2>/dev/null | sed -n '/\* /s///p')
+    if [ -n "$branch" ]; then
+        printf ' (%s)' "$branch"
+    fi
 }
 
 # --- Color definitions ---

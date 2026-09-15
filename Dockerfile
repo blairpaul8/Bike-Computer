@@ -22,6 +22,10 @@ RUN apt-get update \
         cmake \
         ninja-build \
         ccache \
+        ripgrep \
+        fd-find \
+        nodejs \
+        npm \
         libffi-dev \
         libssl-dev \
         dfu-util \
@@ -59,5 +63,6 @@ RUN git clone \
         https://github.com/espressif/esp-idf.git \
         "${IDF_PATH}" \
     && "${IDF_PATH}/install.sh" esp32
+
 
 CMD ["/bin/bash"]
