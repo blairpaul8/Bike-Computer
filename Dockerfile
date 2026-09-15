@@ -64,4 +64,6 @@ RUN git clone \
         "${IDF_PATH}" \
     && "${IDF_PATH}/install.sh" esp32
 
+RUN idf.py add-dependency "esp-idf-lib/dht"
+
 CMD ["/bin/bash"]
