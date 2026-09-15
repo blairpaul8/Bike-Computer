@@ -72,4 +72,3 @@ sdkconfig
 
 managed_components
 dependencies.lock
-idf_component.yml
