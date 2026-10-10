@@ -28,8 +28,17 @@ make docker-build
 ``` bash
 make docker-run-usb
 ```
+
 ``` bash
 make docker-run
+```
+
+- Start/Stop Docker Container
+
+```
+make docker-start
+
+make docker-stop
 ```
 
 - Build the project

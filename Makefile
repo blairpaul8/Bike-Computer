@@ -19,10 +19,18 @@ docker-run-usb:
 		$(IMAGE_NAME)
 
 docker-run:
-	docker run -dit \
-		-v $(shell pwd):/workspace \
-		--name $(CONTAINER_NAME) \
-		$(IMAGE_NAME)
+	@if [ -z "$$(docker ps -aq -f name=^$(CONTAINER_NAME)$$)" ]; then \
+		echo "Creating $(CONTAINER_NAME)..."; \
+		docker run -dit \
+			-v $(CURDIR):/workspace \
+			-w /workspace \
+			--name $(CONTAINER_NAME) \
+			$(IMAGE_NAME); \
+	elif [ -z "$$(docker ps -q -f name=^$(CONTAINER_NAME)$$)" ]; then \
+		echo "Starting $(CONTAINER_NAME)..."; \
+		docker start $(CONTAINER_NAME); \
+	fi
+	@docker exec -it -w /workspace $(CONTAINER_NAME) /bin/bash
 
 docker-start:
 	docker start $(CONTAINER_NAME)
