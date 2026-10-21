@@ -3,6 +3,7 @@ idf_component_register(
         "bike-computer.c"
         "weather/weather_task.cpp"
         "weather/weather.cpp"
+        "gps/gps_task.cpp"
     INCLUDE_DIRS
         "."
 )

@@ -3,5 +3,6 @@
 
 void app_main(void)
 {
-    weather_task_start();
+    // weather_task_start();
+    gps_task_start();
 }
