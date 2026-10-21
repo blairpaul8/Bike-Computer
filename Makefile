@@ -12,11 +12,19 @@ docker-build:
 # Create the container
 # --device passes the usb connection into the container
 docker-run-usb:
-	docker run -dit \
-		--device=/dev/ttyUSB0:/dev/ttyUSB0 \
-		-v $(shell pwd):/workspace \
-		--name $(CONTAINER_NAME) \
-		$(IMAGE_NAME)
+	@if [ -z "$$(docker ps -aq -f name=^$(CONTAINER_NAME)$$)" ]; then \
+		echo "Creating $(CONTAINER_NAME) with USB passthrough..."; \
+		docker run -dit \
+			--device=/dev/ttyUSB0:/dev/ttyUSB0 \
+			-v $(CURDIR):/workspace \
+			-w /workspace \
+			--name $(CONTAINER_NAME) \
+			$(IMAGE_NAME); \
+	elif [ -z "$$(docker ps -q -f name=^$(CONTAINER_NAME)$$)" ]; then \
+		echo "Starting $(CONTAINER_NAME)..."; \
+		docker start $(CONTAINER_NAME); \
+	fi
+	@docker exec -it -w /workspace $(CONTAINER_NAME) /bin/bash
 
 docker-run:
 	@if [ -z "$$(docker ps -aq -f name=^$(CONTAINER_NAME)$$)" ]; then \
@@ -32,14 +40,8 @@ docker-run:
 	fi
 	@docker exec -it -w /workspace $(CONTAINER_NAME) /bin/bash
 
-docker-start:
-	docker start $(CONTAINER_NAME)
-
 docker-stop:
 	docker stop $(CONTAINER_NAME)
-
-docker-shell:
-	docker exec -it $(CONTAINER_NAME) /bin/bash -i
 
 # Command that was used for project creation
 set-target:
@@ -50,7 +52,7 @@ build:
 	idf.py build
 
 flash:
-	idf.py -p /dev/ttyUSB0 flash monitor
+	idf.py -p /dev/ttyUSB0 -b 115200 flash monitor
 
 # Windows commands for setting up esp32 connection on windows
 usb-prep-bind-w:
