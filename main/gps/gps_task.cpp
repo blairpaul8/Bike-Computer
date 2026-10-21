@@ -58,12 +58,13 @@ while (true) {
         sizeof(data) - 1,
         pdMS_TO_TICKS(1000)
     );
-
+ 
     ESP_LOGI(TAG, "UART received %d bytes", length);
 
 if (length > 0) {
+    data[length] = '\0';
     ESP_LOGI(TAG, "Received %d bytes:", length);
-    ESP_LOG_BUFFER_HEX(TAG, data, length);
+    ESP_LOGI(TAG, "GPS STRING: %s\n", reinterpret_cast<char*>(data));
 }
 }
 
