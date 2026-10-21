@@ -3,7 +3,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 
-#define DHT_GPIO GPIO_NUM_27
+#define DHT_GPIO GPIO_NUM_21
 static const char *TAG = "DHT11";
 
 using namespace weather;
@@ -16,12 +16,11 @@ float Weather::get_humidity() { return humidity_; }
 
 // silly method to keep read_sensor private.
 // just as an example
-void Weather::update_sensor() {
-  this->read_sensor();
-}
+void Weather::update_sensor() { this->read_sensor(); }
 
 bool Weather::read_sensor() {
-  esp_err_t res = dht_read_float_data(DHT_TYPE_DHT11, DHT_GPIO, &this->temperature_, &this->humidity_);
+  esp_err_t res = dht_read_float_data(DHT_TYPE_DHT11, DHT_GPIO,
+                                      &this->temperature_, &this->humidity_);
 
   if (res != ESP_OK) {
     ESP_LOGI(TAG, "Failed to read DHT11: %s", esp_err_to_name(res));
