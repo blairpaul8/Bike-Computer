@@ -17,5 +17,6 @@ static const uint8_t TARGET_ADDR[6] = {0x57, 0x67, 0xAB, 0xC8, 0x98, 0xF2};
 
 void app_main(void)
 {
-    weather_task_start();
+    // weather_task_start();
+    gps_task_start();
 }
