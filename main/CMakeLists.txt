@@ -1,9 +1,9 @@
 idf_component_register(
     SRCS
-        "bike-computer.c"
-        "weather/weather_task.cpp"
-        "weather/blue.c"
-        "weather/weather.cpp"
+        #"bike-computer.c"
+        #"weather/weather_task.cpp"
+        "blue.c"
+        #"weather/weather.cpp"
         "gps/GpsTask.cpp"
         "drivers/uart/Uart.cpp"
     INCLUDE_DIRS

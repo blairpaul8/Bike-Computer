@@ -1,16 +1,14 @@
-
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
-#include "esp_central.h"
-/* BLE */
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
 #include "host/ble_hs.h"
 #include "host/util/util.h"
 #include "console/console.h"
 #include "services/gap/ble_svc_gap.h"
+#include "esp_central.h"
 
 #define BLECENT_SVC_HR_UUID 0x180D
 #define BLECENT_CHR_HR_MEAS 0x2A37
@@ -18,21 +16,18 @@ static const char *TAG = "hr_scan";
 
 static uint8_t own_addr_type;
 
-static const uint8_t TARGET_ADDR[6] = {0x57, 0x67, 0xAB, 0xC8, 0x98, 0xF2};
-
 static void blecent_scan(void);
 static void blecent_on_disc_complete(const struct peer *peer, int status, void *arg);
 
-static int blecent_should_connect(const struct ble_gap_disc_desc *disc) // scan and filter for bluetooth
+static int blecent_should_connect(const struct ble_gap_disc_desc *disc)
 {
-    /* The device has to be advertising connectability. */
     if (disc->event_type != BLE_HCI_ADV_RPT_EVTYPE_ADV_IND && disc->event_type != BLE_HCI_ADV_RPT_EVTYPE_DIR_IND)
     {
         return 0;
     }
     struct ble_hs_adv_fields fields;
 
-    if (ble_hs_adv_parse_fields(&fields, disc->data, disc->length_data) != 0) // filling the field struct with the values found.
+    if (ble_hs_adv_parse_fields(&fields, disc->data, disc->length_data) != 0)
     {
         return 0;
     }
@@ -40,7 +35,7 @@ static int blecent_should_connect(const struct ble_gap_disc_desc *disc) // scan 
     for (int i = 0; i < fields.num_uuids16; i++)
     {
         if (ble_uuid_u16(&fields.uuids16[i].u) == BLECENT_SVC_HR_UUID)
-        { // address of heart rate monitors
+        {
             return 1;
         }
     }
@@ -56,7 +51,7 @@ static int blecent_gap_event(struct ble_gap_event *event, void *arg)
     case BLE_GAP_EVENT_DISC:
         if (blecent_should_connect(&event->disc))
         {
-            ble_gap_disc_cancel(); // must stop scanning before connecting
+            ble_gap_disc_cancel();
             ble_gap_connect(own_addr_type, &event->disc.addr, 30000, NULL,
                             blecent_gap_event, NULL);
         }
@@ -70,7 +65,7 @@ static int blecent_gap_event(struct ble_gap_event *event, void *arg)
         }
         else
         {
-            blecent_scan(); // connect failed, try again
+            blecent_scan();
         }
         return 0;
 
@@ -96,23 +91,18 @@ static int blecent_gap_event(struct ble_gap_event *event, void *arg)
     }
 }
 
-// tells whether we got a subscriptions or not.
 static int blecent_on_subscribe(uint16_t conn_handle, const struct ble_gatt_error *error, struct ble_gatt_attr *attr, void *arg)
 {
     ESP_LOGI(TAG, "Subscribe status=%d", error->status);
     return 0;
 }
 
-/**
- * Called when service discovery of the specified peer has completed.
- */
 static void
 blecent_on_disc_complete(const struct peer *peer, int status, void *arg)
 {
 
     if (status != 0)
     {
-        /* Service discovery failed.  Terminate the connection. */
         ble_gap_terminate(peer->conn_handle, BLE_ERR_REM_USER_CONN_TERM);
         return;
     }
@@ -126,20 +116,18 @@ blecent_on_disc_complete(const struct peer *peer, int status, void *arg)
         return;
     }
 
-    uint8_t value[2] = {1, 0}; // enable notifications
+    uint8_t value[2] = {1, 0};
     int rc = ble_gattc_write_flat(peer->conn_handle, dsc->dsc.handle, value, sizeof(value), NULL, NULL);
     if (rc != 0)
     {
         ESP_LOGE(TAG, "Subscribe failed; rc=%d", rc);
     }
-
-    //! need to add the gap event part that actually parses for the heart rate information.
 }
 
 static void blecent_scan(void)
 {
     struct ble_gap_disc_params disc_params = {0};
-    disc_params.filter_duplicates = 0; /* report each device once */
+    disc_params.filter_duplicates = 0;
     disc_params.passive = 0;
 
     int rc = ble_gap_disc(own_addr_type, BLE_HS_FOREVER, &disc_params, blecent_gap_event, NULL);
