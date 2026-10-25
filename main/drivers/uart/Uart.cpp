@@ -1,3 +1,13 @@
+///////////////////////////////////////////
+// Uart.cpp
+//
+// Description:
+//  Wrapper around esp idf uart library
+//  to make creating uart connections
+//  easier
+//
+//  22 October 2026
+///////////////////////////////////////////
 #include "Uart.hpp"
 
 #include "esp_err.h"
