@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "bike-computer.h"
-
+#include "blue.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 /* BLE */
@@ -21,4 +21,10 @@ void app_main(void)
 
     // weather_task_start();
     gps_task_start();
+
+    nvs_flash_init();
+    nimble_port_init();
+    ble_hs_cfg.sync_cb = blecent_on_sync;
+    peer_init(MYNEWT_VAL(BLE_MAX_CONNECTIONS), 64, 64, 64);
+    nimble_port_freertos_init(host_task);
 }

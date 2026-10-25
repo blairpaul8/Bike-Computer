@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "blue.h"
 #include <string.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
@@ -16,10 +17,9 @@ static const char *TAG = "hr_scan";
 
 static uint8_t own_addr_type;
 
-static void blecent_scan(void);
-static void blecent_on_disc_complete(const struct peer *peer, int status, void *arg);
 
-static int blecent_should_connect(const struct ble_gap_disc_desc *disc)
+
+static int blecent_gap_event(struct ble_gap_event *event, void *arg)
 {
     if (disc->event_type != BLE_HCI_ADV_RPT_EVTYPE_ADV_IND && disc->event_type != BLE_HCI_ADV_RPT_EVTYPE_DIR_IND)
     {
@@ -154,11 +154,3 @@ static void host_task(void *param)
     nimble_port_freertos_deinit();
 }
 
-void app_main(void)
-{
-    nvs_flash_init();
-    nimble_port_init();
-    ble_hs_cfg.sync_cb = blecent_on_sync;
-    peer_init(MYNEWT_VAL(BLE_MAX_CONNECTIONS), 64, 64, 64);
-    nimble_port_freertos_init(host_task);
-}
