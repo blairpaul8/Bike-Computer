@@ -4,6 +4,9 @@ idf_component_register(
         "Bluetooth/blue.c"
         "gps/GpsTask.cpp"
         "drivers/uart/Uart.cpp"
+        "display/DisplayTask.cpp"
+        "drivers/spi/Spi.cpp"
+        "display/St7796Display.cpp"
     INCLUDE_DIRS
         "."
 )
