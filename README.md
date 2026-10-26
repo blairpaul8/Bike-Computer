@@ -79,4 +79,6 @@ make usb-attach-w BUSID=<bus id of Silicon Labs CP210x USB to UART Bridge>
 
 Add other Components here
 
-### Mobile App Architecture
+### Pinout Diagram
+
+![Alt text](/images/esp32_pinout.png)
