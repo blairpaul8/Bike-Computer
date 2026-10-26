@@ -17,9 +17,10 @@ static const char *TAG = "hr_scan";
 
 static uint8_t own_addr_type;
 
+static void blecent_scan(void);
+static void blecent_on_disc_complete(const struct peer *peer, int status, void *arg);
 
-
-static int blecent_gap_event(struct ble_gap_event *event, void *arg)
+static int blecent_should_connect(const struct ble_gap_disc_desc *disc)
 {
     // Advertisements come in types. These two are the connectable ones, so anything else 
     // (like broadcast-only beacons) is rejected immediately.
@@ -181,7 +182,7 @@ static void host_task(void *param)
     nimble_port_freertos_deinit();
 }
 
-void app_main(void)
+void blue_init(void)
 {
     // NimBLE stores some state (like bonding keys) in flash through NVS, so it has to be initialized first.
     nvs_flash_init();
