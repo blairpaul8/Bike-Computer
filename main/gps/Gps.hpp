@@ -13,6 +13,7 @@
 #include "IGps.hpp"
 #include "GpsFix.hpp"
 #include <cstdint>
+#include <cstddef>
 
 namespace gps {
 
@@ -43,6 +44,8 @@ public:
   ///
   /// @return true when a valid GpsFix struct is filled
   bool hasFix() const;
+  /// @brief feed raw bytes from the UART into the assembler
+  void feed(const uint8_t* data, size_t len); // temporary
 private:
 
   /// @brief Parses the data fields from a Nmea gps sentence
@@ -56,7 +59,12 @@ private:
   /// when a sentence begins and ends.
   ///
   /// @return true if a rmc or gga sentence is found
-  bool assembleGpsSentence();
+  bool assembleGpsSentence(char c);
+  char line_[128]; // This allows that if a read comes through
+                   // between 2 different reads it still picks up
+  char line_len_{0};
+  bool in_sentence_{false};
+
 
   /// @brief stores the current $GPRMC Sentence
   char rmc_[128]{};

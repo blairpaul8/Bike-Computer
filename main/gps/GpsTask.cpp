@@ -27,7 +27,12 @@ bool GpsTask::init() {
     return false;
   }
 
-  // Need to create Gps object here
+  // Create gps obj
+  gps_ = std::make_unique<gps::Gps>();
+  if (!gps_->isInitialized()) {
+    ESP_LOGE(TAG, "failed to create gps_ obj");
+    return false;
+  }
 
 
   return true; 
@@ -46,8 +51,7 @@ void GpsTask::run() {
 
     if (length > 0) {
       data[length] = '\0';
-      ESP_LOGI(TAG, "Received %d bytes:", length);
-      ESP_LOGI(TAG, "GPS STRING: %s", reinterpret_cast<char *>(data));
+      gps_->feed(data, length);
     }
   }
 }
