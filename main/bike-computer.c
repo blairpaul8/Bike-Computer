@@ -9,6 +9,6 @@
 void app_main(void)
 {
     // blue_init();
-    // gps_task_start();
-    display_task_start();
+     gps_task_start();
+    //display_task_start();
 }

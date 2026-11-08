@@ -23,7 +23,9 @@ using namespace gps;
 
   bool parseGpsSentence() {}
 
-  bool Gps::assembleGpsSentence() {}
+  bool Gps::assembleGpsSentence() {
+    std::cout << data; // test
+  }
 
   // Add whatever functions or methods are needed.
   // if its just a helper function put it at the bottom of this file
