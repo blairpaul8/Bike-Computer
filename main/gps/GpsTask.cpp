@@ -29,11 +29,6 @@ bool GpsTask::init() {
 
   // Create gps obj
   gps_ = std::make_unique<gps::Gps>();
-  if (!gps_->isInitialized()) {
-    ESP_LOGE(TAG, "failed to create gps_ obj");
-    return false;
-  }
-
 
   return true; 
 }
@@ -50,7 +45,6 @@ void GpsTask::run() {
     int length = gps_uart_->read(data, sizeof(data) - 1, pdMS_TO_TICKS(1000));
 
     if (length > 0) {
-      data[length] = '\0';
       gps_->feed(data, length);
     }
   }
