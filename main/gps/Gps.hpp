@@ -60,9 +60,9 @@ private:
   ///
   /// @return true if a rmc or gga sentence is found
   bool assembleGpsSentence(char c);
-  char line_[128]; // This allows that if a read comes through
+  char line_[128]{}; // This allows that if a read comes through
                    // between 2 different reads it still picks up
-  char line_len_{0};
+  size_t line_len_{0};
   bool in_sentence_{false};
 
 

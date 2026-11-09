@@ -19,13 +19,13 @@ static const char* TAG = "Gps";
 
   Gps::Gps() {}
 
-  bool Gps::update(uint32_t timeout_ms) {}
+  bool Gps::update(uint32_t timeout_ms) { (void)timeout_ms; return false; }
 
-  GpsFix Gps::getFix() const {}
+  GpsFix Gps::getFix() const { return GpsFix(); }
   
-  bool Gps::hasFix() const {}
+  bool Gps::hasFix() const { return false; }
 
-  bool parseGpsSentence() {}
+  bool Gps::parseGpsSentence() { return false; }
 
   bool Gps::assembleGpsSentence(char c) {
     if (c == '$') {
