@@ -3,6 +3,7 @@ idf_component_register(
         "bike-computer.c"
         "Bluetooth/blue.c"
         "gps/GpsTask.cpp"
+        "gps/Gps.cpp"
         "drivers/uart/Uart.cpp"
         "display/DisplayTask.cpp"
         "drivers/spi/Spi.cpp"
