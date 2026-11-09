@@ -10,6 +10,8 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_st7796.h"
 
+#include "font8x8_basic.h"
+
 St7796Display::St7796Display(spi::Spi& spiBus) {
     if (!spiBus.isInitialized()) {
         return;
@@ -42,6 +44,7 @@ St7796Display::St7796Display(spi::Spi& spiBus) {
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_));
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_, true));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_, true, false));
 
     buffer_ = static_cast<uint16_t*>(
         heap_caps_malloc(
@@ -56,6 +59,8 @@ St7796Display::St7796Display(spi::Spi& spiBus) {
 }
 
 St7796Display::~St7796Display() {
+    heap_caps_free(buffer_);
+
     if (io_) {
         // Finish pending transfers before deleting LCD resources.
         ESP_ERROR_CHECK(
@@ -108,4 +113,68 @@ void St7796Display::fillDisplay(uint16_t color) {
     );
 
     heap_caps_free(buffer_);
+}
+
+uint16_t St7796Display::convertColor(uint16_t color) {
+    return static_cast<uint16_t>((color << 8) | (color >> 8));
+}
+
+void St7796Display::addLetterToBuffer(char x, uint16_t color, uint16_t bg_color) {
+    const auto index = static_cast<unsigned char>(x);
+    const auto& glyph = font8x8_basic[x < 128 ? index : '?'];
+
+    for (int row = 0; row < 8; ++row) {
+
+        const auto bits = static_cast<uint8_t>(glyph[row]);
+        for (int col = 0; col < 8; ++col) {
+            const bool isSet = (bits & (1u << col)) != 0;
+            buffer_[row * 8 + col] = isSet ? color : bg_color;
+        }
+    }
+}
+
+void St7796Display::writeChar(int x_cord, int y_cord, char x, uint16_t color, uint16_t bg_color) {
+    if(!initialized_) {
+        return;
+    }
+
+    ESP_ERROR_CHECK(buffer_ ? ESP_OK : ESP_ERR_NO_MEM);
+
+    const uint16_t c_color = convertColor(color);
+    const uint16_t b_color = convertColor(bg_color);
+
+    addLetterToBuffer(x, c_color, b_color);
+
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(
+        panel_,
+        x_cord,
+        y_cord,
+        x_cord + 8,
+        y_cord + 8,
+        buffer_
+    ));
+    // Wait for SPI to finish reading the buffer.
+    ESP_ERROR_CHECK(
+        esp_lcd_panel_io_tx_param(io_, -1, nullptr, 0)
+    );
+
+}
+
+void St7796Display::writeString(int x_cord, int y_cord, const char* text, uint16_t color, uint16_t bg_color) {
+    if(!initialized_) {
+        return;
+    }
+
+    int start_x = x_cord;
+
+    while(*text != '\0') {
+        if(*text == '\n') {
+            x_cord = start_x;
+            y_cord += 8;
+        } else {
+            writeChar(x_cord, y_cord, *text, color, bg_color);
+            x_cord += 8;
+        }
+        ++text;
+    };
 }

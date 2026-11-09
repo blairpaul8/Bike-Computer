@@ -38,7 +38,8 @@ bool DisplayTask::init() {
 }
 
 void DisplayTask::run() {
-    display_->fillDisplay(0xF800);
+    // display_->fillDisplay(0xFFFF);
+    display_->writeString(72, 232, "Well hello there Paul!\nHow is your day going?");
 
     while (true) {
         // Add screen updates here later.
