@@ -8,7 +8,9 @@
 
 void app_main(void)
 {
-    // blue_init();
+    BleDriver hr= new BleDriver();
+    hr.begin(0x180D, 0x2a37, nullptr, nullptr);
+    blue_init();
     // gps_task_start();
     display_task_start();
 }
