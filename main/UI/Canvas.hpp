@@ -1,8 +1,5 @@
 #pragma once
 
-#include "IDisplay.hpp"
-#include "../drivers/spi/Spi.hpp"
-
 #include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
 #include <cstdint>
@@ -22,7 +19,7 @@ public:
 
     void clear(uint16_t color);
 
-    void fillRect(int x, int y, int w, int h, uint16_t color) {
+    void fillRect(int x, int y, int w, int h, uint16_t color);
 
     void writeChar(int x_cord, int y_cord, char x, uint16_t color = 0xFFFF, uint16_t bg_color = 0x0000);
 

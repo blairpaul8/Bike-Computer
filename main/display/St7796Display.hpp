@@ -17,6 +17,12 @@ public:
 
     bool isInitialized() const override;
 
+    int width() const override  { return WIDTH; }
+    int height() const override { return HEIGHT; }
+    void flush(int x0, int y0, int x1, int y1, const uint16_t* pixels) override;
+    void waitDone() override;
+
+
     static constexpr int WIDTH = 320;
     static constexpr int HEIGHT = 480;
     static constexpr int TRANSFER_ROWS = 20;

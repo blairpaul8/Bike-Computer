@@ -10,7 +10,6 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_st7796.h"
 
-#include "font8x8_basic.h"
 
 St7796Display::St7796Display(spi::Spi& spiBus) {
     if (!spiBus.isInitialized()) {
@@ -46,21 +45,10 @@ St7796Display::St7796Display(spi::Spi& spiBus) {
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_, true));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_, true, false));
 
-    buffer_ = static_cast<uint16_t*>(
-        heap_caps_malloc(
-            PIXELS * sizeof(uint16_t),
-            MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL
-        )
-    );
-
-    ESP_ERROR_CHECK(buffer_ ? ESP_OK : ESP_ERR_NO_MEM);
-
     initialized_ = true;
 }
 
 St7796Display::~St7796Display() {
-    heap_caps_free(buffer_);
-
     if (io_) {
         // Finish pending transfers before deleting LCD resources.
         ESP_ERROR_CHECK(
@@ -79,4 +67,13 @@ St7796Display::~St7796Display() {
 
 bool St7796Display::isInitialized() const {
     return initialized_;
+}
+
+
+void St7796Display::flush(int x0, int y0, int x1, int y1, const uint16_t* pixels) {
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_, x0, y0, x1, y1, pixels));
+}
+
+void St7796Display::waitDone() {
+    ESP_ERROR_CHECK(esp_lcd_panel_io_tx_param(io_, -1, nullptr, 0));
 }

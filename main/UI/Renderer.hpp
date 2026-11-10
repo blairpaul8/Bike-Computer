@@ -2,7 +2,7 @@
 #pragma once
 
 #include "Canvas.hpp"
-#include "Widget.hpp"
+#include "Widgets/Widget.hpp"
 #include "../display/IDisplay.hpp"
 
 class Renderer {
