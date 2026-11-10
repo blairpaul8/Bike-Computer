@@ -9,8 +9,11 @@
 
 class Canvas {
 public:
+    // constructor
     explicit Canvas(int width, int maxRows);
-    ~Canvas() override;
+
+    // Destructor
+    ~Canvas();
 
     Canvas(const Canvas&) = delete;
     Canvas& operator=(const Canvas&) = delete;
@@ -19,7 +22,7 @@ public:
 
     void clear(uint16_t color);
 
-    void fillRectangle(uint16_t color);
+    void fillRect(int x, int y, int w, int h, uint16_t color) {
 
     void writeChar(int x_cord, int y_cord, char x, uint16_t color = 0xFFFF, uint16_t bg_color = 0x0000);
 
@@ -35,7 +38,7 @@ private:
     uint16_t* buffer_ = nullptr;
     int width_;
     int maxRows_;
-    int bandY = 0;
+    int bandY_ = 0;
     int bandRows_ = 0;
 
 
