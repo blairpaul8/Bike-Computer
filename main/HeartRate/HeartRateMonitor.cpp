@@ -26,15 +26,28 @@ void HeartRateMonitor::notifyThunk(const uint8_t *data, size_t len, void *ctx)
 // Runs on the NimBLE host task: parse, drop in the queue, return. Never block.
 void HeartRateMonitor::onNotify(const uint8_t *data, size_t len)
 {
-    // TODO: move the parsing from the old NOTIFY_RX case here.
-    //   data[0] is the flags byte.
-    //   bit 0 set   -> 16-bit value: data[1] | (data[2] << 8)
-    //   bit 0 clear -> 8-bit value:  data[1]
-    // Check len first so you never read past the end
-    // (need len >= 2, or len >= 3 for the 16-bit form).
+     // Need at least the flags byte plus an 8-bit value.
+    if (len < 2)
+    {
+        return;
+    }
+
+    uint16_t bpm;
+    if (data[0] & 0x01) // bit 0 set -> 16-bit value
+    {
+        if (len < 3)
+        {
+            return;
+        }
+        bpm = data[1] | (data[2] << 8);
+    }
+    else // bit 0 clear -> 8-bit value
+    {
+        bpm = data[1];
+    }
 
     HeartRateSample sample{};
-    // sample.bpm = ...;
+    sample.bpm = bpm;
 
     xQueueOverwrite(queue_, &sample); // never blocks
 }
