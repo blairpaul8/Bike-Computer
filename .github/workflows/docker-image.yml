@@ -24,7 +24,8 @@ jobs:
           repo="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
           echo "image=ghcr.io/${repo}/devbox:${{ hashFiles('Dockerfile') }}" >> "$GITHUB_OUTPUT"
 
-      - uses: docker/login-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -57,10 +58,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/login-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name:
+      - name: Build project inside devbox
+        run: |
+          docker pull "${{ needs.image.outputs.image }}"
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "${{ github.workspace }}:/workspace" \
+            "${{ needs.image.outputs.image }}" \
+            bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'
