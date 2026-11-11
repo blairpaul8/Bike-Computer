@@ -45,7 +45,10 @@ public:
   /// @return true when a valid GpsFix struct is filled
   bool hasFix() const;
   /// @brief feed raw bytes from the UART into the assembler
-  void feed(const uint8_t* data, size_t len); // temporary
+  void feed(const uint8_t* data, size_t len);
+
+  /// @brief Stores line if the sentence is gga or rmc
+  void storeSentence();
 private:
 
   /// @brief Parses the data fields from a Nmea gps sentence
