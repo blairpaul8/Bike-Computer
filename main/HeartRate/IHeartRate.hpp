@@ -1,6 +1,6 @@
 // i_heart_rate.hpp
 #pragma once
-#include <cstdint>
+#include <stdint.h>
 
 struct HeartRateSample
 {
