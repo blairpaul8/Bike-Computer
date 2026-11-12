@@ -51,6 +51,11 @@ void HeartRateTask::run()
     }
 }
 
+HeartRateClient HeartRateTask::getHeartRateClient()
+{
+    return hr_server_->client();
+}
+
 extern "C" void HeartRate_task_start()
 {
     static HeartRateTask HeartRateTask;

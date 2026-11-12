@@ -10,7 +10,14 @@
 class HeartRateTask : public Task<HeartRateTask> {
 public:
     bool init();
+
     void run();
+
+    // I don't love this. Maybe we can come up with
+    // another solution
+    // Provides instant of the client to whatever needs it.
+    // Most likely is the HeartRateWidget for the UI.
+    HeartRateClient getHeartRateClient();
 
 private:
     // Members are destroyed in reverse declaration order.
