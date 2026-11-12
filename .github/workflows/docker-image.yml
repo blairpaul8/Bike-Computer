@@ -7,23 +7,69 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  image:
+    name: Ensure devbox image
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the devbox image
+      - name: Compute image tag
+        id: meta
         run: |
-          docker build . \
-                --file Dockerfile \
-                --tag devbox:ci \
-                --build-arg USER_UID="$(id -u)" \
-                --build-arg USER_GID="$(id -g)"
+          repo="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          echo "image=ghcr.io/${repo}/devbox:${{ hashFiles('Dockerfile') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if image already exists
+        id: exists
+        run: |
+          if docker manifest inspect "${{ steps.meta.outputs.image }}" > /dev/null 2>&1; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and push devbox image
+        if: steps.exists.outputs.found == 'false'
+        run: |
+          docker build --network=host \
+            --file Dockerfile \
+            --tag "${{ steps.meta.outputs.image }}" .
+          docker push "${{ steps.meta.outputs.image }}"
+
+  build:
+    name: Build project
+    needs: image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build project inside devbox
         run: |
+          docker pull "${{ needs.image.outputs.image }}"
           docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            devbox:ci \
+            --user "$(id -u):$(id -g)" \
+            -v "${{ github.workspace }}:/workspace" \
+            "${{ needs.image.outputs.image }}" \
             bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'
