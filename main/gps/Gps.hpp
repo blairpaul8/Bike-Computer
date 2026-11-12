@@ -69,7 +69,7 @@ private:
   bool in_sentence_{false};
 
 
-  /// @brief stores the current $GPRMC Sentence
+  /// @brief stores the current $GPRMC Sentence.
   char rmc_[128]{};
 
   /// @brief stores the current $GPGGA Sentence.
