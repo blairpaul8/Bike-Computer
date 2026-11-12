@@ -67,6 +67,7 @@ jobs:
 
       - name: Build project inside devbox
         run: |
+          sudo chown -R 1000:1000 "${{ github.workspace }}"
           docker pull "${{ needs.image.outputs.image }}"
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
