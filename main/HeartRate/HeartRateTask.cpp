@@ -39,9 +39,11 @@ void HeartRateTask::run()
 
     while (true)
     {
+        // read HR sample
         if (HeartRate_->read(hr_sample, 5000))
         {
             ESP_LOGI("main", "HR: %u bpm", hr_sample.bpm);
+            // put on the queue for the client
             hr_server_->publish(hr_sample);
         }
         else
