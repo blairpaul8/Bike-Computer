@@ -17,6 +17,7 @@ idf_component_register(
         "display/St7796Display.cpp"
         "UI/Canvas.cpp"
         "UI/Renderer.cpp"
+        "UI/Widgets/HelloWidget.cpp"
     INCLUDE_DIRS
         "."
 )

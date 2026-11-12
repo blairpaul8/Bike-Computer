@@ -2,7 +2,7 @@
 
 #include "HelloWidget.hpp"
 
-void HelloWidget::draw()
+void HelloWidget::draw(Canvas& c)
 {
     c.writeString(kGreetingStringX, kGreetingStringY,
                     "Well hello there ELI!\nHow is your day going?");
