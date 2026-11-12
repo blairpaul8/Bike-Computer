@@ -10,6 +10,7 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_st7796.h"
 
+
 St7796Display::St7796Display(spi::Spi& spiBus) {
     if (!spiBus.isInitialized()) {
         return;
@@ -42,15 +43,7 @@ St7796Display::St7796Display(spi::Spi& spiBus) {
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_));
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_, true));
-
-    buffer_ = static_cast<uint16_t*>(
-        heap_caps_malloc(
-            PIXELS * sizeof(uint16_t),
-            MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL
-        )
-    );
-
-    ESP_ERROR_CHECK(buffer_ ? ESP_OK : ESP_ERR_NO_MEM);
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_, true, false));
 
     initialized_ = true;
 }
@@ -76,36 +69,11 @@ bool St7796Display::isInitialized() const {
     return initialized_;
 }
 
-void St7796Display::fillDisplay(uint16_t color) {
-    if (!initialized_) {
-        return;
-    }
 
+void St7796Display::flush(int x0, int y0, int x1, int y1, const uint16_t* pixels) {
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_, x0, y0, x1, y1, pixels));
+}
 
-    ESP_ERROR_CHECK(buffer_ ? ESP_OK : ESP_ERR_NO_MEM);
-
-    // Swap bytes for the LCD's RGB565 transfer order.
-    uint16_t wireColor = static_cast<uint16_t>(
-        (color << 8) | (color >> 8)
-    );
-
-    std::fill_n(buffer_, PIXELS, wireColor);
-
-    for (int y = 0; y < HEIGHT; y += TRANSFER_ROWS) {
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(
-            panel_,
-            0,
-            y,
-            WIDTH,
-            std::min(y + TRANSFER_ROWS, HEIGHT),
-            buffer_
-        ));
-    }
-
-    // Wait for SPI to finish reading the buffer.
-    ESP_ERROR_CHECK(
-        esp_lcd_panel_io_tx_param(io_, -1, nullptr, 0)
-    );
-
-    heap_caps_free(buffer_);
+void St7796Display::waitDone() {
+    ESP_ERROR_CHECK(esp_lcd_panel_io_tx_param(io_, -1, nullptr, 0));
 }

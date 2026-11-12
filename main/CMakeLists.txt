@@ -4,20 +4,26 @@ idf_component_register(
         "bike-computer.c"
 
         # Drivers
-        "drivers/ble/BLE.cpp"
         "drivers/uart/Uart.cpp"
-        "display/DisplayTask.cpp"
         "drivers/spi/Spi.cpp"
-        "display/St7796Display.cpp"
+        "drivers/ble/BLE.cpp"
 
         # GPS
         "gps/GpsTask.cpp"
+        "gps/GpsTask.cpp"
         "gps/Gps.cpp"
-
+        
         # Heart Rate
         "HeartRate/HeartRateMonitor.cpp"
         "HeartRate/HeartRateTask.cpp"
         "HeartRate/HeartRateServer.cpp"
+
+        # Display/UI
+        "display/DisplayTask.cpp"
+        "display/St7796Display.cpp"
+        "UI/Canvas.cpp"
+        "UI/Renderer.cpp"
+      
     INCLUDE_DIRS
         "."
 )
