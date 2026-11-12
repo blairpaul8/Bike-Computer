@@ -1,59 +1,35 @@
 #include "HeartRateTask.hpp"
-
 #include "../drivers/ble/BLE.hpp"
 #include "HeartRateMonitor.hpp"
+#include <cstdint>
 #include "../HeartRate/IHeartRate.hpp"
-#include "HeartRateServer.hpp"
-
 #include "esp_log.h"
+#include <memory>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-#include <cstdint>
-#include <memory>
 
 bool HeartRateTask::init()
 {
     HeartRate_ble_ = std::make_unique<BleDriver>();
-
     HeartRate_ = std::make_unique<HeartRateMonitor>(*HeartRate_ble_);
-
-    hr_server_ = std::make_unique<HeartRateServer>();
-
-    if (!HeartRate_->init()) {
-        // TODO: Log
-        return false;
-    }
-
-    if (!hr_server_->init()) {
-        // TODO: Log
-        return false;
-    }
-
-    return true;
+    return HeartRate_->init();
 }
 
 void HeartRateTask::run()
 {
-    HeartRateSample hr_sample;
+    HeartRateSample s;
 
     while (true)
     {
-        if (HeartRate_->read(hr_sample, 5000))
+        if (HeartRate_->read(s, 5000))
         {
-            ESP_LOGI("main", "HR: %u bpm", hr_sample.bpm);
-            hr_server_->publish(hr_sample);
+            ESP_LOGI("main", "HR: %u bpm", s.bpm);
         }
         else
         {
             ESP_LOGW("main", "No HR sample in 5 s");
         }
     }
-}
-
-HeartRateClient HeartRateTask::getHeartRateClient()
-{
-    return hr_server_->client();
 }
 
 extern "C" void HeartRate_task_start()
