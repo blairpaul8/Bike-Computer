@@ -4,6 +4,7 @@ idf_component_register(
         "Bluetooth/blue.c"
         "drivers/ble/BLE.cpp"
         "gps/GpsTask.cpp"
+        "gps/Gps.cpp"
         "drivers/uart/Uart.cpp"
         "display/DisplayTask.cpp"
         "drivers/spi/Spi.cpp"

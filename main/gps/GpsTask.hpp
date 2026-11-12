@@ -14,6 +14,7 @@
 
 #include "../tasks/task.hpp"
 #include "../drivers/uart/Uart.hpp"
+#include "./Gps.hpp"
 #include <memory>
 
 class GpsTask : public Task<GpsTask> {
@@ -24,6 +25,7 @@ public:
 private:
     // Pointer to the Uart obj
     std::unique_ptr<uart::Uart> gps_uart_;
+    std::unique_ptr<gps::Gps> gps_;
 
     // GPIO pin for the Gps Uart connection
     static constexpr int gps_uart_pin_ = 16;
