@@ -7,8 +7,7 @@
 
 void app_main(void)
 {
-    HeartRate_task_start();
-    //blue_init();
+    //HeartRate_task_start();
     // gps_task_start();
-    //display_task_start();
+    display_task_start();
 }

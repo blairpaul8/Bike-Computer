@@ -16,7 +16,12 @@ public:
     St7796Display& operator=(const St7796Display&) = delete;
 
     bool isInitialized() const override;
-    void fillDisplay(uint16_t color) override;
+
+    int width() const override  { return WIDTH; }
+    int height() const override { return HEIGHT; }
+    void flush(int x0, int y0, int x1, int y1, const uint16_t* pixels) override;
+    void waitDone() override;
+
 
     static constexpr int WIDTH = 320;
     static constexpr int HEIGHT = 480;
@@ -26,8 +31,6 @@ public:
 private:
     esp_lcd_panel_handle_t panel_ = nullptr;
     esp_lcd_panel_io_handle_t io_ = nullptr;
-
-    uint16_t* buffer_ = nullptr;
 
     bool initialized_ = false;
 };

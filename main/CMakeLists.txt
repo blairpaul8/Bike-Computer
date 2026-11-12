@@ -1,16 +1,22 @@
 idf_component_register(
     SRCS
+        # Entry Point
         "bike-computer.c"
-        "Bluetooth/blue.c"
-        "drivers/ble/BLE.cpp"
+
+        # Drivers
         "gps/GpsTask.cpp"
         "gps/Gps.cpp"
         "drivers/uart/Uart.cpp"
-        "display/DisplayTask.cpp"
         "drivers/spi/Spi.cpp"
+
+        # GPS
+        "gps/GpsTask.cpp"
+
+        # Display/UI
+        "display/DisplayTask.cpp"
         "display/St7796Display.cpp"
-        "HeartRate/HeartRateMonitor.cpp"
-        "HeartRate/HeartRateTask.cpp"
+        "UI/Canvas.cpp"
+        "UI/Renderer.cpp"
     INCLUDE_DIRS
         "."
 )

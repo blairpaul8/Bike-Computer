@@ -1,6 +1,10 @@
 #include "DisplayTask.hpp"
 #include "St7796Display.hpp"
 
+#include "../UI/Renderer.hpp"
+
+#include "../UI/Widgets/HelloWidget.hpp"
+
 #include <cstdint>
 #include <memory>
 
@@ -34,11 +38,24 @@ bool DisplayTask::init() {
         return false;
     }
 
+    renderer_ = std::make_unique<Renderer>(*display_);
+    if (!renderer_) {
+        // add log
+        return false;
+    }
+
     return true;
 }
 
 void DisplayTask::run() {
-    display_->fillDisplay(0xF800);
+    // Create widget
+    HelloWidget hello_;
+
+    // Call renderer_->setRoot()
+    renderer_->setRoot(&hello_);
+
+    // call renderer_->renderFrame();
+    renderer_->renderFrame();
 
     while (true) {
         // Add screen updates here later.
