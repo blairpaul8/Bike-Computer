@@ -27,8 +27,8 @@ bool GpsTask::init() {
     return false;
   }
 
-  // Need to create Gps object here
-
+  // Create gps obj
+  gps_ = std::make_unique<gps::Gps>();
 
   return true; 
 }
@@ -45,9 +45,7 @@ void GpsTask::run() {
     int length = gps_uart_->read(data, sizeof(data) - 1, pdMS_TO_TICKS(1000));
 
     if (length > 0) {
-      data[length] = '\0';
-      ESP_LOGI(TAG, "Received %d bytes:", length);
-      ESP_LOGI(TAG, "GPS STRING: %s", reinterpret_cast<char *>(data));
+      gps_->feed(data, length);
     }
   }
 }
