@@ -1,5 +1,4 @@
-// ble_driver.cpp
-#include "ble_driver.hpp"
+#include "BLE.hpp"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "nimble/nimble_port.h"
@@ -100,10 +99,10 @@ static int gapEvent(struct ble_gap_event *event, void *arg)
             len = sizeof(buf);
         os_mbuf_copydata(event->notify_rx.om, 0, len, buf);
 
-        // buf[0] is the flags byte. Bit 0 set = 16-bit value (buf[1] low, buf[2] high);
-        // bit 0 clear = 8-bit value in buf[1]
-        uint16_t hr = (buf[0] & 0x01) ? (buf[1] | (buf[2] << 8)) : buf[1];
-        ESP_LOGI(TAG, "Heart rate: %u bpm", hr);
+        if (s_notifyCb != nullptr)
+        {
+            s_notifyCb(buf, len, s_notifyCtx);
+        }
         return 0;
     }
 
@@ -122,8 +121,11 @@ static void onDiscComplete(const struct peer *peer, int status, void *arg)
         return;
     }
 
-    // Looks through the discovered data for a descriptor by walking: service 0x180D
-    const struct peer_dsc *dsc = peer_dsc_find_uuid(peer, BLE_UUID16_DECLARE(s_serviceUuid), BLE_UUID16_DECLARE(s_charUuid), BLE_UUID16_DECLARE(BLE_GATT_DSC_CLT_CFG_UUID16));
+    const ble_uuid16_t svcUuid  = BLE_UUID16_INIT(s_serviceUuid);
+    const ble_uuid16_t charUuid = BLE_UUID16_INIT(s_charUuid);
+    const ble_uuid16_t cccdUuid = BLE_UUID16_INIT(BLE_GATT_DSC_CLT_CFG_UUID16);
+
+    const struct peer_dsc *dsc = peer_dsc_find_uuid(peer, &svcUuid.u, &charUuid.u, &cccdUuid.u);
 
     if (dsc == NULL)
     {
@@ -147,7 +149,7 @@ static void scan(void)
 {
     // was scan: use s_ownAddrType
     // {0} zeroes every field first.
-    struct ble_gap_disc_params disc_params = {0};
+    struct ble_gap_disc_params disc_params = {};
 
     // means you get a report every time a device advertises,
     // not just the first time.

@@ -1,7 +1,7 @@
 // ble_driver.hpp
 #pragma once
-#include <cstdint>
-#include <cstddef>
+#include <stdint.h>
+#include <stddef.h>
 
 // Called on the NimBLE host task for every notification.
 // Keep it short and never block.
