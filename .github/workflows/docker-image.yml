@@ -69,7 +69,6 @@ jobs:
         run: |
           docker pull "${{ needs.image.outputs.image }}"
           docker run --rm \
-            --user "$(id -u):$(id -g)" \
             -v "${{ github.workspace }}:/workspace" \
             "${{ needs.image.outputs.image }}" \
             bash -c 'source "/opt/esp/esp-idf/export.sh" && make build'
