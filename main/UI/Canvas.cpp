@@ -42,9 +42,9 @@ void Canvas::fillRect(int x, int y, int w, int h, uint16_t color) {
     // y start can't be past y end
     if (x0 >= x1 || y0 >= y1) return;
 
-    const uint16_t wire = convertColor(color);
+    const uint16_t row_color = convertColor(color);
     for (int yy = y0; yy < y1; ++yy) {
-        std::fill_n(&buffer_[(yy - bandY_) * width_ + x0], x1 - x0, wire);
+        std::fill_n(&buffer_[(yy - bandY_) * width_ + x0], x1 - x0, row_color);
     }
 }
 
