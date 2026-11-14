@@ -82,3 +82,13 @@ Add other Components here
 ### Pinout Diagram
 
 ![Alt text](/images/esp32_pinout.png)
+
+
+
+
+## Overview
+
+Need to a a lot more information here. Also need to create a separate MD file with instructions on how to run the project
+and just link it here.
+
+RideManager will act as the main logic thread for the device. the peripheral sensors run in their own thread producing data and passing it via a message queue to the RideManager. The RideManager then processes this data to gather all the necessary information about the ride. It then passes the processed data to the DisplayTask to update the UI accordingly.
