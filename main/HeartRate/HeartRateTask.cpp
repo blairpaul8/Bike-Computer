@@ -8,9 +8,13 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 
 #include <cstdint>
 #include <memory>
+
+HeartRateTask::HeartRateTask(QueueHandle_t queue)
+    : server_queue_(queue) {}
 
 bool HeartRateTask::init()
 {
@@ -18,17 +22,13 @@ bool HeartRateTask::init()
 
     HeartRate_ = std::make_unique<HeartRateMonitor>(*HeartRate_ble_);
 
-    hr_server_ = std::make_unique<HeartRateServer>();
+    hr_server_ = std::make_unique<HeartRateServer>(server_queue_);
 
     if (!HeartRate_->init()) {
         // TODO: Log
         return false;
     }
 
-    if (!hr_server_->init()) {
-        // TODO: Log
-        return false;
-    }
 
     return true;
 }
@@ -53,13 +53,8 @@ void HeartRateTask::run()
     }
 }
 
-HeartRateClient HeartRateTask::getHeartRateClient()
+extern "C" void HeartRate_task_start(QueueHandle_t queue)
 {
-    return hr_server_->client();
-}
-
-extern "C" void HeartRate_task_start()
-{
-    static HeartRateTask HeartRateTask;
-    HeartRateTask.start("HeartRateTask");
+    static HeartRateTask hr_task(queue);
+    hr_task.start("HeartRateTask");
 }

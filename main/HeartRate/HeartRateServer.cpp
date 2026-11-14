@@ -1,15 +1,12 @@
 // HeartRateServer.cpp
 #include "HeartRateServer.hpp"
 
-bool HeartRateServer::init()
-{
-    mailbox_ = xQueueCreate(1, sizeof(HeartRateSample));
-    if (mailbox_ == nullptr)
-    {
-        return false;
-    }
-    return true;
-}
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+
+
+HeartRateServer::HeartRateServer(QueueHandle_t queue)
+    : mailbox_(queue) {}
 
 void HeartRateServer::publish(HeartRateSample &sample)
 {

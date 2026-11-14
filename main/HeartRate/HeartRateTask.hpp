@@ -9,15 +9,11 @@
 
 class HeartRateTask : public Task<HeartRateTask> {
 public:
+    HeartRateTask(QueueHandle_t queue);
+
     bool init();
 
     void run();
-
-    // I don't love this. Maybe we can come up with
-    // another solution
-    // Provides instant of the client to whatever needs it.
-    // Most likely is the HeartRateWidget for the UI.
-    HeartRateClient getHeartRateClient();
 
 private:
     // Members are destroyed in reverse declaration order.
@@ -31,6 +27,8 @@ private:
 
     // Pointer to HeartRateServer
     std::unique_ptr<HeartRateServer> hr_server_;
+
+    QueueHandle_t server_queue_;
 };
 
-extern "C" void HeartRate_task_start();
+extern "C" void HeartRate_task_start(QueueHandle_t queue);

@@ -11,10 +11,7 @@ class HeartRateServer
 {
 public:
     // Default constructor
-    HeartRateServer() = default;
-
-    // Initializes the queue.
-    bool init();
+    HeartRateServer(QueueHandle_t queue);
 
     // Puts the heart rate reading passed in onto the
     // queue
