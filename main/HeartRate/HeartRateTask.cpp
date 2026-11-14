@@ -32,7 +32,7 @@ bool HeartRateTask::init()
 
 void HeartRateTask::run()
 {
-    HeartRateSample s;
+    HeartRateSample hr_sample;
 
     while (true)
     {

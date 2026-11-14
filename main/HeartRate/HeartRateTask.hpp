@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
 #include "../tasks/task.hpp"
-
 #include "../drivers/ble/BLE.hpp"
 #include "IHeartRate.hpp"
+#include "HeartRateServer.hpp"
+
+#include <memory>
 
 class HeartRateTask : public Task<HeartRateTask> {
 public:
