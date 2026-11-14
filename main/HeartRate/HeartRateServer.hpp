@@ -17,10 +17,6 @@ public:
     // queue
     void publish(HeartRateSample &sample);
 
-    // Returns a HeartRateClient but doesn't own it.
-    HeartRateClient client() const { return HeartRateClient(mailbox_); }
-
-
 private:
 
     // Queue used to send HeartRate readings to the client
