@@ -7,23 +7,41 @@
 #include <memory>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
+
+#include <cstdint>
+#include <memory>
+
+HeartRateTask::HeartRateTask(QueueHandle_t queue)
+    : server_queue_(queue) {}
 
 bool HeartRateTask::init()
 {
     HeartRate_ble_ = std::make_unique<BleDriver>();
     HeartRate_ = std::make_unique<HeartRateMonitor>(*HeartRate_ble_);
-    return HeartRate_->init();
+
+    hr_server_ = std::make_unique<HeartRateServer>(server_queue_);
+
+    if (!HeartRate_->init()) {
+        // TODO: Log
+        return false;
+    }
+
+    return true;
 }
 
 void HeartRateTask::run()
 {
-    HeartRateSample s;
+    HeartRateSample hr_sample;
 
     while (true)
     {
-        if (HeartRate_->read(s, 5000))
+        // read HR sample
+        if (HeartRate_->read(hr_sample, 5000))
         {
-            ESP_LOGI("main", "HR: %u bpm", s.bpm);
+            ESP_LOGI("main", "HR: %u bpm", hr_sample.bpm);
+            // put on the queue for the client
+            hr_server_->publish(hr_sample);
         }
         else
         {
@@ -32,8 +50,8 @@ void HeartRateTask::run()
     }
 }
 
-extern "C" void HeartRate_task_start()
+extern "C" void HeartRate_task_start(QueueHandle_t queue)
 {
-    static HeartRateTask HeartRateTask;
-    HeartRateTask.start("HeartRateTask");
+    static HeartRateTask hr_task(queue);
+    hr_task.start("HeartRateTask");
 }
