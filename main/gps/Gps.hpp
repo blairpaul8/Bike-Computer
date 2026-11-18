@@ -49,6 +49,13 @@ public:
 
   /// @brief Stores line if the sentence is gga or rmc
   void storeSentence();
+
+  // added: getters for the parsed values
+  const char* utcTime() const { return utc_time_; }  // "HH:MM:SS.ss"
+  double latitude() const { return latitude_; }      // signed decimal degrees
+  double longitude() const { return longitude_; }    // signed decimal degrees
+  char ewIndicator() const { return ew_; }           // 'E' or 'W'
+  double speedKmh() const { return speed_kmh_; }
 private:
 
   /// @brief Parses the data fields from a Nmea gps sentence
@@ -74,6 +81,16 @@ private:
 
   /// @brief stores the current $GPGGA Sentence.
   char gga_[128]{};
+
+  // added: stores the current $GPVTG Sentence.
+  char vtg_[128]{};
+
+  // added: parsed values, filled by parseGpsSentence
+  char utc_time_[16]{};
+  double latitude_{0.0};
+  double longitude_{0.0};
+  char ew_{'\0'};
+  double speed_kmh_{0.0};
 };
 
 } // end namespace gps
